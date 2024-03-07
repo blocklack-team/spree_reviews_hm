@@ -3,9 +3,14 @@
 class Spree::Api::ReviewsController < Spree::StoreController
     helper Spree::BaseHelper
     before_action :load_product, only: [:index, :new, :create, :edit, :update]
-  
+
     def index
-      @approved_reviews = Spree::Review.approved.where(product: @product)
+      @reviews = collection
+    end
+  
+    def show
+      #@approved_reviews = Spree::Review.approved.where(product: @product)
+      @approved_reviews = Spree::Review.default_approval_filter.where(product: @product)
     end
   
     def new
@@ -64,6 +69,12 @@ class Spree::Api::ReviewsController < Spree::StoreController
     end
   
     private
+
+		def collection
+			params[:q] ||= {}
+			@search = Spree::Review.ransack(params[:q])
+			@collection = @search.result.includes([:product, :user, :feedback_reviews])
+		end
   
     def load_product
       @product = Spree::Product.friendly.find(params[:product_id])
