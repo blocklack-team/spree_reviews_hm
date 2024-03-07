@@ -16,7 +16,7 @@ Spree::Core::Engine.add_routes do
   post '/reviews/:review_id/feedback(.:format)' => 'feedback_reviews#create', as: :feedback_reviews
 
   namespace :api, defaults: { format: 'json' } do
-    resources :reviews, only: [:index, :create, :update, :destroy]
+    resources :reviews, only: [:index, :show, :create, :update, :destroy]
 
     resources :feedback_reviews, only: [:create, :update, :destroy]
 
