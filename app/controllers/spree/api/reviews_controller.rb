@@ -4,27 +4,46 @@ class Spree::Api::ReviewsController < Spree::StoreController
     helper Spree::BaseHelper
     before_action :load_product, only: [:index, :new, :create, :edit, :update]
 
-    def index
-      @reviews = collection
-    end
+		def index
+			@reviews = collection
+	
+			respond_to do |format|
+				format.html
+				format.json { render json: @reviews }
+			end
+		end
   
-    def show
-      #@approved_reviews = Spree::Review.approved.where(product: @product)
-      @approved_reviews = Spree::Review.default_approval_filter.where(product: @product)
-    end
+		def show
+			@approved_reviews = Spree::Review.default_approval_filter.where(product: @product)
+	
+			respond_to do |format|
+				format.html
+				format.json { render json: @approved_reviews }
+			end
+		end
   
-    def new
-      @review = Spree::Review.new(product: @product)
-      authorize! :create, @review
-    end
+		def new
+			@review = Spree::Review.new(product: @product)
+			authorize! :create, @review
+	
+			respond_to do |format|
+				format.html
+				format.json { render json: @review }
+			end
+		end
   
-    def edit
-      @review = Spree::Review.find(params[:id])
-      if @review.product.nil?
-        flash[:error] = I18n.t('spree.error_no_product')
-      end
-      authorize! :update, @review
-    end
+		def edit
+			@review = Spree::Review.find(params[:id])
+			if @review.product.nil?
+				flash[:error] = I18n.t('spree.error_no_product')
+			end
+			authorize! :update, @review
+	
+			respond_to do |format|
+				format.html
+				format.json { render json: @review }
+			end
+		end
   
     # save if all ok
     def create
@@ -47,6 +66,11 @@ class Spree::Api::ReviewsController < Spree::StoreController
       else
         render :new
       end
+
+			respond_to do |format|
+				format.html
+				format.json { render json: @review }
+			end
     end
   
     def update
@@ -66,6 +90,11 @@ class Spree::Api::ReviewsController < Spree::StoreController
       else
         render :edit
       end
+
+			respond_to do |format|
+				format.html
+				format.json { render json: @review }
+			end
     end
   
     private
