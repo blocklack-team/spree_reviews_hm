@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # app/controllers/spree/api/reviews_controller.rb
 
 module Spree
@@ -7,12 +8,12 @@ module Spree
 
       def index
         @reviews = collection
-        render json: @reviews
+        render json: @reviews.includes([:product, :user, :feedback_reviews])
       end
 
       def show
         @review = Spree::Review.find(params[:id])
-        render json: @review
+        render json: @review.includes([:product, :user, :feedback_reviews])
       end
 
       def new
@@ -39,7 +40,11 @@ module Spree
 
       def edit
         @review = Spree::Review.find(params[:id])
+        if @review.product.nil?
+          flash[:error] = I18n.t('spree.error_no_product')
+        end
         authorize! :update, @review
+    
         render json: @review
       end
 
