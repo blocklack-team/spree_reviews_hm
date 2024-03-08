@@ -102,7 +102,7 @@ class Spree::Api::ReviewsController < Spree::StoreController
 		def collection
 			params[:q] ||= {}
 			@search = Spree::Review.ransack(params[:q])
-			@collection = @search.result.includes([:product, :user, :feedback_reviews])
+			@collection = Spree::Review.includes([:product, :user, :feedback_reviews])
 		end
   
     def load_product
