@@ -7,13 +7,13 @@ module Spree
       before_action :load_product, only: %i[index new create edit update]
 
       def index
-        @reviews = collection
-        render json: @reviews.includes([:product, :user, :feedback_reviews])
+        @reviews = collection.includes([:product, :user, :feedback_reviews])
+        render json: @reviews
       end
 
       def show
-        @review = Spree::Review.find(params[:id])
-        render json: @review.includes([:product, :user, :feedback_reviews])
+        @review = Spree::Review.includes([:product, :user, :feedback_reviews]).find(params[:id])
+        render json: @review
       end
 
       def new
