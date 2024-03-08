@@ -8,12 +8,16 @@ module Spree
 
       def index
         @reviews = collection.includes([:product, :user, :feedback_reviews])
-        render json: @reviews
+
+        render json: {
+          reviews: @reviews.as_json(include: { product: { only: [:id, :name] }, user: { only: [:id, :first_name, :last_name] } }),
+          total_reviews: @reviews.size
+        }
       end
 
       def show
         @review = Spree::Review.includes([:product, :user, :feedback_reviews]).find(params[:id])
-        render json: @review
+        render json: @review.as_json(include: { product: { only: [:id, :name] }, user: { only: [:id, :first_name, :last_name] } })
       end
 
       def new
