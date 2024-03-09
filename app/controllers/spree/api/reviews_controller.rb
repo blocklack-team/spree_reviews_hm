@@ -8,10 +8,13 @@ module Spree
 
       def index
         @reviews = Spree::Review.includes([:product, :user, :feedback_reviews]).where(product_id: params[:product_id])
+        total_reviews = @reviews.size
+        average_rating = total_reviews > 0 ? @reviews.sum(:rating).to_f / total_reviews : 0
 
         render json: {
           reviews: @reviews.as_json(include: { product: { only: [:id, :name] }, user: { only: [:id, :first_name, :last_name] } }),
-          total_reviews: @reviews.size
+          total_reviews: total_reviews,
+          average: average_rating.round
         }
       end
 
