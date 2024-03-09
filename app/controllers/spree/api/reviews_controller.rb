@@ -7,7 +7,7 @@ module Spree
       before_action :load_product, only: %i[index new create edit update]
 
       def index
-        @reviews = collection.includes([:product, :user, :feedback_reviews])
+        @reviews = collection.includes([:product, :user, :feedback_reviews]).find(params[:product_id])
 
         render json: {
           reviews: @reviews.as_json(include: { product: { only: [:id, :name] }, user: { only: [:id, :first_name, :last_name] } }),
