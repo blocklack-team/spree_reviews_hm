@@ -103,7 +103,7 @@ module Spree
 
       # Finds user based on api_key or by user_id if api_key belongs to an admin.
       def find_review_user
-        if params[:user_id] && @current_user_roles.include?('admin')
+        if params[:user_id]
           @current_api_user = Spree.user_class.find(params[:user_id])
         end
       end
