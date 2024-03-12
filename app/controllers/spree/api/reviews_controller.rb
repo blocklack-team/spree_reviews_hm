@@ -4,6 +4,7 @@
 module Spree
   module Api
     class ReviewsController < ApplicationController
+      before_action :authenticate_user!, only: [:create]
       before_action :load_product, :find_review_user
       before_action :load_review, only: [:show, :update, :destroy]
       before_action :sanitize_rating, only: [:create, :update]
@@ -28,7 +29,7 @@ module Spree
 
       def new
         @review = Spree::Review.new(product: @product)
-        :authenticate_user! :create, @review
+        authorize_for_create! :create, @review
         render json: @review
       end
 
@@ -39,7 +40,7 @@ module Spree
         @review.ip_address = request.remote_ip
         @review.locale = I18n.locale.to_s if Spree::Reviews::Config[:track_locale]
 
-        :authenticate_user! :create, @review
+        authorize_for_create! :create, @review
 
         if @review.save
           render json: @review, status: :created
@@ -53,7 +54,7 @@ module Spree
         if @review.product.nil?
           flash[:error] = I18n.t('spree.error_no_product')
         end
-        :authenticate_user! :update, @review
+        authorize! :update, @review
     
         render json: @review
       end
@@ -61,7 +62,7 @@ module Spree
       def update
         @review = Spree::Review.find(params[:id])
 
-        :authenticate_user! :update, @review
+        authorize! :update, @review
 
         if @review.update(review_params)
           render json: @review
@@ -72,12 +73,22 @@ module Spree
 
       def destroy
         @review = Spree::Review.find(params[:id])
-        :authenticate_user! :destroy, @review
+        authorize! :destroy, @review
         @review.destroy
         head :no_content
       end
 
       private
+
+      def authorize_for_create
+        bearer_token = request.headers['Authorization']&.split(' ')&.last
+    
+        user = User.find_by(api_key: bearer_token)
+    
+        unless user
+          render json: { error: 'Unauthorized' }, status: :unauthorized
+        end
+      end
 
       def collection
         params[:q] ||= {}
