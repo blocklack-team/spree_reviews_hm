@@ -3,7 +3,9 @@
 
 module Spree
   module Api
-    class ReviewsController < ::Spree::Api::V2::Platform::ResourceController
+    class ReviewsController < ::Spree::Api::V2::ResourceController
+      before_action :require_spree_current_user, except: %i[index]
+
       before_action :load_product, :find_review_user
       before_action :load_review, only: [:show, :update, :destroy]
       before_action :sanitize_rating, only: [:create, :update]
@@ -40,8 +42,6 @@ module Spree
         @review.user = spree_current_user if spree_user_signed_in?
         @review.ip_address = request.remote_ip
         @review.locale = I18n.locale.to_s if Spree::Reviews::Config[:track_locale]
-
-        spree_authorize! :create, resource if spree_current_user.present?
 
         if @review.save
           render json: @review, status: :created
