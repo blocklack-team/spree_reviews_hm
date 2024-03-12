@@ -5,6 +5,9 @@ module Spree
   module Api
     class ReviewsController < ApplicationController
       before_action :load_product, only: %i[index new create edit update]
+      before_action :load_review, only: [:show, :update, :destroy]
+      before_action :sanitize_rating, only: [:create, :update]
+      before_action :prevent_multiple_reviews, only: [:create]
 
       def index
         @reviews = Spree::Review.includes([:product, :user, :feedback_reviews]).where(product_id: params[:product_id])
@@ -92,6 +95,24 @@ module Spree
 
       def review_params
         params.require(:review).permit(permitted_review_attributes)
+      end
+
+      def load_review
+        @review = Spree::Review.find(params[:id])
+      end
+
+      # Ensures that a user can't create more than 1 review per product
+      def prevent_multiple_reviews
+        @review = @current_api_user.reviews.find_by(product: @product)
+        if @review.present?
+          invalid_resource!(@review)
+        end
+      end
+
+      # Converts rating strings like "5 units" to "5"
+      # Operates on params
+      def sanitize_rating
+        params[:rating].sub!(/\s*[^0-9]*\z/, '') if params[:rating].present?
       end
     end
   end
