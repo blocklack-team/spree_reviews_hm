@@ -39,7 +39,7 @@ module Spree
         @review.ip_address = request.remote_ip
         @review.locale = I18n.locale.to_s if Spree::Reviews::Config[:track_locale]
 
-        #authorize! :create, @review
+        authorize! :create, @review
 
         if @review.save
           render json: @review, status: :created
