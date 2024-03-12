@@ -41,10 +41,15 @@ module Spree
         @review.ip_address = request.remote_ip
         @review.locale = I18n.locale.to_s if Spree::Reviews::Config[:track_locale]
 
+        authorize! :create, @review
         authorize_for_create!
 
         if @review.save
           render json: @review, status: :created
+          return
+        else
+          render json: { errors: @review.errors.full_messages }, status: :unprocessable_entity
+          return
         end
       end
 
@@ -86,6 +91,7 @@ module Spree
     
         unless user
           render json: { error: 'Unauthorized' }, status: :unauthorized
+          return
         end
       end
 
