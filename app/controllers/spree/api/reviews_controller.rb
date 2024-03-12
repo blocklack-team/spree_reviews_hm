@@ -90,11 +90,11 @@ module Spree
       end
 
       def permitted_review_attributes
-        %i[rating title review name show_identifier images]
+        [:product_id, :rating, :title, :review, :name, :show_identifier]
       end
 
       def review_params
-        params.require(:review).permit(permitted_review_attributes)
+        params.permit(permitted_review_attributes)
       end
 
       def load_review
