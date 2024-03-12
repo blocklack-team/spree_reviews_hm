@@ -112,7 +112,7 @@ module Spree
       def prevent_multiple_reviews
         @review = @current_api_user.reviews.find_by(product: @product)
         if @review.present?
-          invalid_resource!(@review)
+          render json: { errors: @review.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
