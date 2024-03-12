@@ -6,7 +6,6 @@ module Spree
     class ReviewsController < ApplicationController
       include Devise::Controllers::Helpers
 
-      before_action :authenticate_user!, only: [:create]
       before_action :load_product, :find_review_user
       before_action :load_review, only: [:show, :update, :destroy]
       before_action :sanitize_rating, only: [:create, :update]
