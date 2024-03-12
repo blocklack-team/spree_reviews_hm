@@ -3,7 +3,7 @@
 
 module Spree
   module Api
-    class ReviewsController < ::Spree::Api::V2::Platform::ResourceController
+    class ReviewsController < ::Spree::Api::V2::ResourceController
       #before_action :authorize_spree_user, only: [:create]
       before_action :authorize_spree_user, except: [:index]
 
