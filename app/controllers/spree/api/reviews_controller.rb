@@ -28,7 +28,7 @@ module Spree
 
       def new
         @review = Spree::Review.new(product: @product)
-        spree_authorize! :create, @review
+        :authenticate_user! :create, @review
         render json: @review
       end
 
@@ -39,7 +39,7 @@ module Spree
         @review.ip_address = request.remote_ip
         @review.locale = I18n.locale.to_s if Spree::Reviews::Config[:track_locale]
 
-        spree_authorize! :create, @review
+        :authenticate_user! :create, @review
 
         if @review.save
           render json: @review, status: :created
@@ -53,7 +53,7 @@ module Spree
         if @review.product.nil?
           flash[:error] = I18n.t('spree.error_no_product')
         end
-        spree_authorize! :update, @review
+        :authenticate_user! :update, @review
     
         render json: @review
       end
@@ -61,7 +61,7 @@ module Spree
       def update
         @review = Spree::Review.find(params[:id])
 
-        spree_authorize! :update, @review
+        :authenticate_user! :update, @review
 
         if @review.update(review_params)
           render json: @review
@@ -72,7 +72,7 @@ module Spree
 
       def destroy
         @review = Spree::Review.find(params[:id])
-        spree_authorize! :destroy, @review
+        :authenticate_user! :destroy, @review
         @review.destroy
         head :no_content
       end
