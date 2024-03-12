@@ -6,6 +6,8 @@ module Spree
     class ReviewsController < ApplicationController
       include Devise::Controllers::Helpers
 
+      before_action :require_spree_current_user, only: [:create]
+
       before_action :load_product, :find_review_user
       before_action :load_review, only: [:show, :update, :destroy]
       before_action :sanitize_rating, only: [:create, :update]
@@ -30,7 +32,7 @@ module Spree
 
       def new
         @review = Spree::Review.new(product: @product)
-        authorize_for_create!
+        authorize! :create, @review
         render json: @review
       end
 
@@ -42,7 +44,6 @@ module Spree
         @review.locale = I18n.locale.to_s if Spree::Reviews::Config[:track_locale]
 
         #authorize! :create, @review
-        authorize_for_create!
 
         if @review.save
           render json: @review, status: :created
@@ -83,17 +84,6 @@ module Spree
       end
 
       private
-
-      def authorize_for_create!
-        bearer_token = request.headers['Authorization']&.split(' ')&.last
-    
-        user = Spree.user_class.find_by(spree_api_key: bearer_token)
-    
-        unless user
-          render json: { error: 'Unauthorized' }, status: :unauthorized
-          return
-        end
-      end
 
       def collection
         params[:q] ||= {}
