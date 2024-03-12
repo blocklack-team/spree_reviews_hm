@@ -4,7 +4,7 @@
 module Spree
   module Api
     class ReviewsController < ApplicationController
-      before_action :load_product, only: %i[index new create edit update]
+      before_action :load_product, :find_review_user
       before_action :load_review, only: [:show, :update, :destroy]
       before_action :sanitize_rating, only: [:create, :update]
       before_action :prevent_multiple_reviews, only: [:create]
@@ -99,6 +99,13 @@ module Spree
 
       def load_review
         @review = Spree::Review.find(params[:id])
+      end
+
+      # Finds user based on api_key or by user_id if api_key belongs to an admin.
+      def find_review_user
+        if params[:user_id] && @current_user_roles.include?('admin')
+          @current_api_user = Spree.user_class.find(params[:user_id])
+        end
       end
 
       # Ensures that a user can't create more than 1 review per product
