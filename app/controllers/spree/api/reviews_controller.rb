@@ -5,6 +5,7 @@ module Spree
   module Api
     class ReviewsController < ::Spree::Api::V2::ResourceController
       #before_action :authorize_spree_user, only: [:create]
+      before_action :require_spree_current_user, except: :index
 
       before_action :load_product, :find_review_user
       before_action :load_review, only: [:show, :update, :destroy]
@@ -30,7 +31,7 @@ module Spree
 
       def new
         @review = Spree::Review.new(product: @product)
-        authorize! :create, @review
+        spree_authorize! :create, @review
         render json: @review
       end
 
@@ -41,7 +42,7 @@ module Spree
         @review.ip_address = request.remote_ip
         @review.locale = I18n.locale.to_s if Spree::Reviews::Config[:track_locale]
 
-        authorize! :create, @review
+        spree_authorize! :create, @review
 
         if @review.save
           render json: @review, status: :created
@@ -57,7 +58,7 @@ module Spree
         if @review.product.nil?
           flash[:error] = I18n.t('spree.error_no_product')
         end
-        authorize! :update, @review
+        spree_authorize! :update, @review
     
         render json: @review
       end
@@ -65,7 +66,7 @@ module Spree
       def update
         @review = Spree::Review.find(params[:id])
 
-        authorize! :update, @review
+        spree_authorize! :update, @review
 
         if @review.update(review_params)
           render json: @review
@@ -76,7 +77,7 @@ module Spree
 
       def destroy
         @review = Spree::Review.find(params[:id])
-        authorize! :destroy, @review
+        spree_authorize! :destroy, @review
         @review.destroy
         head :no_content
       end
