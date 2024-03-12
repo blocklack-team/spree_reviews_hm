@@ -4,9 +4,6 @@
 module Spree
   module Api
     class ReviewsController < ::Spree::Api::V2::Platform::ResourceController
-      #before_action :authorize_spree_user, only: [:create]
-      before_action :spree_authorize!, except: [:index]
-
       before_action :load_product, :find_review_user
       before_action :load_review, only: [:show, :update, :destroy]
       before_action :sanitize_rating, only: [:create, :update]
@@ -16,6 +13,8 @@ module Spree
         @reviews = Spree::Review.includes([:product, :user, :feedback_reviews]).where(product_id: params[:product_id])
         total_reviews = @reviews.size
         average_rating = total_reviews > 0 ? @reviews.sum(:rating).to_f / total_reviews : 0
+
+        p spree_current_user
 
         render json: {
           reviews: @reviews.as_json(include: { product: { only: [:id, :name] }, user: { only: [:id, :first_name, :last_name] } }),
