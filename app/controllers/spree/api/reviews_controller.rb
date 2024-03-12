@@ -29,7 +29,7 @@ module Spree
 
       def new
         @review = Spree::Review.new(product: @product)
-        authorize_for_create! :create, @review
+        authorize_for_create!
         render json: @review
       end
 
@@ -40,7 +40,7 @@ module Spree
         @review.ip_address = request.remote_ip
         @review.locale = I18n.locale.to_s if Spree::Reviews::Config[:track_locale]
 
-        authorize_for_create! :create, @review
+        authorize_for_create!
 
         if @review.save
           render json: @review, status: :created
@@ -80,10 +80,10 @@ module Spree
 
       private
 
-      def authorize_for_create
+      def authorize_for_create!
         bearer_token = request.headers['Authorization']&.split(' ')&.last
     
-        user = User.find_by(api_key: bearer_token)
+        user = Spree.user_class.find_by(spree_api_key: bearer_token)
     
         unless user
           render json: { error: 'Unauthorized' }, status: :unauthorized
