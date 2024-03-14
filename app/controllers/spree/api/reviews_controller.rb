@@ -110,8 +110,6 @@ module Spree
           @current_api_user = Spree::User.find_by(id: spree_current_user.id)
           
           raise render json: { errors: @current_api_user.errors.full_messages }, status: :unprocessable_entity unless @current_api_user
-        else
-          raise render json: { errors: "No current user found" }, status: :unprocessable_entity
         end
       end
 
