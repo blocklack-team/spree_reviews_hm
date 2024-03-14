@@ -108,8 +108,8 @@ module Spree
       def find_review_user
         if spree_current_user.present?
           p spree_current_user
-          @current_api_user = Spree.user_class.find_by(id: spree_current_user)
-          raise "User not found for current user ID: #{spree_current_user}" unless @current_api_user
+          @current_api_user = Spree::User.find_by(id: spree_current_user.id)
+          raise "User not found for current user ID" unless @current_api_user
         else
           raise "No current user found"
         end
