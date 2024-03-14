@@ -37,7 +37,7 @@ module Spree
       def create
         @review = Spree::Review.new(review_params)
         @review.product = @product
-        @review.user = spree_current_user if spree_user_signed_in?
+        @review.user = @current_api_user
         @review.ip_address = request.remote_ip
         @review.locale = I18n.locale.to_s if Spree::Reviews::Config[:track_locale]
 
@@ -108,10 +108,10 @@ module Spree
       def find_review_user
         if spree_current_user.present?
           @current_api_user = Spree::User.find_by(id: spree_current_user.id)
-          p @current_api_user
-          raise "User not found for current user ID" unless @current_api_user
+          
+          raise render json: { errors: @current_api_user.errors.full_messages }, status: :unprocessable_entity unless @current_api_user
         else
-          raise "No current user found"
+          raise render json: { errors: "No current user found" }, status: :unprocessable_entity
         end
       end
 
