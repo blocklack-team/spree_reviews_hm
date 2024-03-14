@@ -106,8 +106,11 @@ module Spree
 
       # Finds user based on api_key or by user_id if api_key belongs to an admin.
       def find_review_user
-        if params[:user_id]
-          @current_api_user = Spree.user_class.find(params[:user_id])
+        if spree_current_user.present?
+          @current_api_user = Spree.user_class.find_by(id: spree_current_user)
+          raise "User not found for current user ID: #{spree_current_user}" unless @current_api_user
+        else
+          raise "No current user found"
         end
       end
 
