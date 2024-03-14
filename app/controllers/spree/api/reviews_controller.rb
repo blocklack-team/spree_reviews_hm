@@ -46,7 +46,7 @@ module Spree
           render json: @review, status: :created
           return
         else
-          render json: { errors: @review.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: @review.errors.full_messages }
           return
         end
       end
@@ -70,7 +70,7 @@ module Spree
         if @review.update(review_params)
           render json: @review
         else
-          render json: { errors: @review.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: @review.errors.full_messages }
         end
       end
 
@@ -90,7 +90,6 @@ module Spree
       end
 
       def load_product
-        p params[:product_id]
         @product = Spree::Product.friendly.find(params[:product_id])
       end
 
@@ -111,7 +110,7 @@ module Spree
         if spree_current_user.present?
           @current_api_user = Spree::User.find_by(id: spree_current_user.id)
           
-          raise render json: { errors: @current_api_user.errors.full_messages }, status: :unprocessable_entity unless @current_api_user
+          raise render json: { errors: @current_api_user.errors.full_messages } unless @current_api_user
         end
       end
 
@@ -119,14 +118,13 @@ module Spree
       def prevent_multiple_reviews
         @review = @current_api_user.reviews.find_by(product: @product)
         if @review.present?
-          render json: { errors: "User can't create more than 1 review per product" }, status: :unprocessable_entity
+          render json: { errors: "User can't create more than 1 review per product" }
         end
       end
 
       # Converts rating strings like "5 units" to "5"
       # Operates on params
       def sanitize_rating
-        p params
         params[:rating] = params[:rating].to_s.sub(/\s*[^0-9]*\z/, '') if params[:rating].present?
       end
     end
