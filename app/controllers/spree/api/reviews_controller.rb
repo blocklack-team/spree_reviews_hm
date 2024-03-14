@@ -119,7 +119,7 @@ module Spree
       def prevent_multiple_reviews
         @review = @current_api_user.reviews.find_by(product: @product)
         if @review.present?
-          render json: { errors: @review.errors.full_messages }, status: :unprocessable_entity
+          render json: { errors: "User can't create more than 1 review per product" }, status: :unprocessable_entity
         end
       end
 
