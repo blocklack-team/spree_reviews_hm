@@ -39,6 +39,7 @@ module Spree
         @review.product = @product
         @review.user = @current_api_user
         @review.ip_address = request.remote_ip
+        @review.name = "#{@current_api_user.first_name} #{@current_api_user.last_name}"
         @review.locale = I18n.locale.to_s if Spree::Reviews::Config[:track_locale]
 
         if @review.save
@@ -93,7 +94,7 @@ module Spree
       end
 
       def permitted_review_attributes
-        [:product_id, :user_id, :rating, :title, :review, :name, :show_identifier]
+        [:product_id, :user_id, :rating, :title, :review, :show_identifier]
       end
 
       def review_params
@@ -124,7 +125,7 @@ module Spree
       # Converts rating strings like "5 units" to "5"
       # Operates on params
       def sanitize_rating
-        params[:rating].sub!(/\s*[^0-9]*\z/, '') if params[:rating].present?
+        params[:rating] = params[:rating].to_s.sub(/\s*[^0-9]*\z/, '') if params[:rating].present?
       end
     end
   end
