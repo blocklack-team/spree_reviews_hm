@@ -39,7 +39,7 @@ module Spree
         @review.product = @product
         @review.user = @current_api_user
         @review.ip_address = request.remote_ip
-        @review.name = "#{@current_api_user.first_name} #{@current_api_user.last_name}"
+        @review.name = @current_api_user.email.split('@').first
         @review.locale = I18n.locale.to_s if Spree::Reviews::Config[:track_locale]
 
         if @review.save
