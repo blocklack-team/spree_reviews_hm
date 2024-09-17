@@ -57,9 +57,8 @@
       <tr>
         <th><%= sort_link @search, :product, Spree.t(:product) %></th>
         <th><%= sort_link @search, :rating, Spree::Review.human_attribute_name(:rating) %></th>
-        <th><%= Spree.t(:feedback) %></th>
+        <th><%= sort_link @search, :name, Spree.t(:name) %></th>
         <th><%= sort_link @search, :user, Spree::Review.human_attribute_name(:user) %></th>
-        <th><%= sort_link @search, :ip_address, Spree::Review.human_attribute_name(:ip_address) %></th>
         <th><%= sort_link @search, :created_at, Spree::Review.human_attribute_name(:created_at) %></th>
         <th data-hook="admin_reviews_index_header_actions" class="actions"></th>
       </tr>
@@ -69,9 +68,8 @@
         <tr data-hook="admin_reviews_index_rows" id="<%= dom_id review %>" class="<%= cycle('odd', 'even') %>">
           <td><%= link_to_if review.product, review.product.name, product_path(review.product) %></td>
           <td><%= txt_stars(review.rating) %></td>
-          <td><%= link_to "(#{review.feedback_stars}/#{review.feedback_reviews.size})", admin_review_feedback_reviews_path(review) %></td>
+          <td><%= review.user ? link_to(review.name, admin_user_path(review.user)) : Spree.t(:anonymous) %></td>
           <td><%= review.user ? link_to(review.user.email, admin_user_path(review.user)) : Spree.t(:anonymous) %></td>
-          <td><%= link_to_if review.ip_address, review.ip_address, "http://whois.domaintools.com/#{review.ip_address}", target: :blank %></td>
           <td><%= l review.created_at, format: :short %></td>
           <td data-hook="admin_reviews_index_row_actions" class="actions">
             <span class="d-flex justify-content-end">
